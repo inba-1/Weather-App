@@ -23,43 +23,44 @@ async function checkWeather(city) {
         document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
         document.querySelector(".wind").innerHTML = data.wind.speed + " km/hr";
 
-        // Set weather icon based on weather condition
+        // Update time-based background first
+        updateBackgroundTime();
+
+        // Set weather icon and override background if needed
         let weatherCondition = data.weather[0].main;
         switch (weatherCondition) {
             case "Clouds":
                 weatherIcon.src = "images/clouds.png";
-                document.body.style.backgroundColor = "#d3d3d3"; // Light gray for cloudy
+                setBackground("#d3d3d3"); // Light gray for cloudy
                 break;
             case "Clear":
                 weatherIcon.src = "images/clear.png";
-                updateBackgroundTime(); // Uses time-based background
-                break;
+                break; // Keep time-based background
             case "Rain":
                 weatherIcon.src = "images/rain.png";
-                document.body.style.backgroundColor = "#6e6e6e"; // Dark gray for rain
+                setBackground("#6e6e6e"); // Dark gray for rain
                 break;
             case "Drizzle":
                 weatherIcon.src = "images/drizzle.png";
-                document.body.style.backgroundColor = "#b3cde0"; // Light blue for drizzle
+                setBackground("#b3cde0"); // Light blue for drizzle
                 break;
             case "Mist":
                 weatherIcon.src = "images/mist.png";
-                document.body.style.backgroundColor = "#a9a9a9"; // Gray for mist
+                setBackground("#a9a9a9"); // Gray for mist
                 break;
             case "Snow":
                 weatherIcon.src = "images/snow.png";
-                document.body.style.backgroundColor = "#ffffff"; // White for snow
+                setBackground("#ffffff"); // White for snow
                 break;
             default:
                 weatherIcon.src = "images/default.png";
-                updateBackgroundTime();
-                break;
+                break; // Keep time-based background
         }
 
         document.querySelector(".weather").style.display = "block";
     } catch (error) {
         alert("Invalid city name. Please try again.");
-        document.querySelector(".weather").style.display = "none"; // Hide the weather data on error
+        document.querySelector(".weather").style.display = "none";
     }
 }
 
@@ -67,14 +68,22 @@ async function checkWeather(city) {
 function updateBackgroundTime() {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 18) {
-        document.body.style.backgroundColor = "#ffffff"; // Day
-        document.body.style.color = "#000"; // Dark text
+        setBackground("#ffffff", "#000"); // Day mode
     } else {
-        document.body.style.backgroundColor = "#000000"; // Night
-        document.body.style.color = "#fff"; // Light text
+        setBackground("#000000", "#fff"); // Night mode
     }
 }
 
+// Helper function to set background and force repaint
+function setBackground(color, textColor = null) {
+    document.body.style.backgroundColor = color;
+    if (textColor) {
+        document.body.style.color = textColor;
+    }
+    document.body.offsetHeight; // Force repaint
+}
+
+// Event listeners
 searchBtn.addEventListener("click", () => {
     checkWeather(searchBox.value);
 });
